@@ -171,6 +171,38 @@ class table__n_a_m_e(DefaultTable.DefaultTable):
 			)
 		]
 
+	def _nameIDs_used_in_stat(self):
+
+		return
+
+	def nameIDs_in_use(self, ttFont):
+		"""
+		Finds all unused name ids.
+		Which means, name IDs which are not used by apps, OS or
+		by any font table like eg. GSUB, GPOS (friendly stylistic set names) or
+		in variable font tables like fvar or STAT table.
+		"""
+		names = getattr(self, 'names', [])
+		nameIDs = set([n.nameID for n in names])
+		used_name_IDs = set()
+		if 'STAT' in ttFont:
+			stat = ttFont['STAT']
+			print(stat.decompile)
+			stat_table_xml = stat.toXML
+			print(stat_table_xml)
+			print('stat_table.DesignAxisRecord: ', stat_table_xml)
+		pass
+		# name IDs 0 - 25 are used by OS and apps
+
+	def unnecessary_nameIDs(self, ttFont):
+		"""
+		Returns a set of unused name ids.
+		Which means, name IDs which are not used by apps, OS or
+		by any font table like eg. GSUB, GPOS (friendly stylistic set names) or
+		in variable font tables like fvar or STAT table.
+		"""
+		pass
+
 	def _findUnusedNameID(self, minNameID=256):
 		"""Finds an unused name id.
 

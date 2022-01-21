@@ -9,7 +9,7 @@ import unittest
 from fontTools.ttLib import newTable
 from fontTools.ttLib.tables._n_a_m_e import (
 	table__n_a_m_e, NameRecord, nameRecordFormat, nameRecordSize, makeName, log)
-
+from Tests.ttLib.tables.S_T_A_T_test import STAT_DATA
 
 def names(nameTable):
 	result = [(n.nameID, n.platformID, n.platEncID, n.langID, n.string)
@@ -449,6 +449,32 @@ class NameRecordTest(unittest.TestCase):
 		self.assertEqual(name.getEncoding(), "ascii")
 		self.assertEqual(name.getEncoding(None), None)
 		self.assertEqual(name.getEncoding(default=None), None)
+
+	def test_nameIDs_in_use(self):
+		from fontTools.ttLib import TTFont, newTable, registerCustomTableClass, unregisterCustomTableClass
+
+		font_obj = TTFont()
+		font_obj['STAT'] = newTable('STAT')
+		font_obj['name'] = newTable('name')
+
+
+		name_table = table__n_a_m_e()
+		name_table.names = [
+			makeName("Bold", 258, 1, 0, 0),  # Mac, MacRoman, English
+			makeName("Gras", 258, 1, 0, 1),  # Mac, MacRoman, French
+			makeName("Fett", 258, 1, 0, 2),  # Mac, MacRoman, German
+			makeName("Sem Fracções", 292, 1, 0, 8)  # Mac, MacRoman, Portuguese
+		]
+
+		font_obj['name'] = name_table
+
+		stat_table = newTable('STAT')
+		stat_table.decompile(STAT_DATA, font=font_obj)
+
+		#font['STAT'].data = STAT_DATA
+
+		print('_findUnusedNameID: ', font_obj['name']._findUnusedNameID())
+		print('nameIDs_in_use: ', font_obj['name'].nameIDs_in_use(font_obj))
 
 if __name__ == "__main__":
 	import sys
