@@ -660,6 +660,42 @@ class TTFont(object):
 		else:
 			raise KeyError(tag)
 
+	def getMasters(self):
+		"""Returns a list of masters coordinates.
+		If it's a static font, it returns an empty list.
+		"""
+
+		masters = []  # masters normalized coordinates
+		if 'gvar' not in self:
+			return masters
+
+		_axes_coords = []
+		axes_tags = set()
+		gvar = self['gvar']
+		for g in gvar.variations:
+			g_gvar = gvar.variations[g]
+			for item in g_gvar:
+				if item.axes not in _axes_coords:
+					for tag in item.axes:
+						axes_tags.add(tag)
+					_axes_coords.append(item.axes)
+
+		for item in _axes_coords:
+			for k, v in item.items():
+				for i, itm in enumerate(v):
+					d = {}
+					d[k] = itm
+					for itemn in _axes_coords:
+						for kn, vn in itemn.items():
+							if k != kn:
+								for i_n, itmn in enumerate(vn):
+									d[kn] = itmn
+									if d not in masters:
+										sorted_dict = {k: d[k] for k in sorted(d)}
+										masters.append(sorted_dict)
+		return masters
+
+
 	def getGlyphSet(self, preferCFF=True):
 		"""Return a generic GlyphSet, which is a dict-like object
 		mapping glyph names to glyph objects. The returned glyph objects

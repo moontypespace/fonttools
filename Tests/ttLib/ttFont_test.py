@@ -118,3 +118,7 @@ def test_virtualGlyphId():
         font.saveXML(out)
         outxml = normalize_TTX(out.getvalue()).splitlines()
         assert xml == outxml
+
+def test_getMasters():
+    otfpath = os.path.join(DATA_DIR, "TestVGID-Regular.otf")
+
